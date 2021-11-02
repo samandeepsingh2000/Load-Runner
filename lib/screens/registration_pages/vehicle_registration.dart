@@ -40,6 +40,7 @@ class _VehicleDetailsState extends State<VehicleDetails> {
   File? rcImagePath,
       insuranceImagePath,
       vehicleFrontImagePath,
+  changingValue,
       vehicleBackImagePath;
   Future<File?> clickImage() async {
     try {
@@ -217,13 +218,27 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                       flex: 1,
                                       child: GestureDetector(
                                         child: SizedBox(
-                                          child: vehicleFrontImageAdded
-                                              ? Image(
-                                                  image: Image.file(
-                                                          vehicleFrontImagePath!)
-                                                      .image,
-                                                  fit: BoxFit.fitWidth,
-                                                )
+                                          child: vehicleFrontImagePath != null
+                                              ? Stack(
+                                            children: [
+
+                                              Image(
+                                                image: Image.file(
+                                                    vehicleFrontImagePath!)
+                                                    .image,
+                                                fit: BoxFit.fitWidth,
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Container(
+                                                    decoration:
+                                                    BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(40),
+                                                        color: Colors.white
+                                                    ),child: Icon(Icons.find_replace,color: Color(0xfffd6206),)),
+                                              ),
+                                            ],
+                                          )
                                               : Container(
                                                   padding: EdgeInsets.all(10),
                                                   decoration: BoxDecoration(
@@ -243,8 +258,45 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                                 ),
                                         ),
                                         onTap: () async {
-                                          vehicleFrontImagePath =
-                                              await pickImageFromGallery();
+                                          showModalBottomSheet(
+                                              context: context,
+                                              builder: (BuildContext bc) {
+                                                return SafeArea(
+                                                  child: Container(
+                                                    child: new Wrap(
+                                                      children: <Widget>[
+                                                        new ListTile(
+                                                            leading: new Icon(Icons.photo_library),
+                                                            title: new Text('Photo Library'),
+                                                            onTap: () async{
+                                                              Navigator.of(context).pop();
+                                                              changingValue =
+                                                              await pickImageFromGallery();
+                                                              setState(() {
+                                                                vehicleFrontImagePath = changingValue;
+
+                                                              });
+                                                            }),
+                                                        new ListTile(
+                                                          leading: new Icon(Icons.photo_camera),
+                                                          title: new Text('Camera'),
+                                                          onTap: () async{
+                                                            Navigator.of(context).pop();
+                                                            changingValue =
+                                                            await clickImage();
+                                                            setState(() {
+                                                              vehicleFrontImagePath = changingValue;
+
+                                                            });
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                          );
+
                                           setState(() {
                                             vehicleFrontImageAdded = true;
                                           });
@@ -255,13 +307,27 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                       flex: 1,
                                       child: GestureDetector(
                                         child: SizedBox(
-                                          child: vehicleBackImageAdded
-                                              ? Image(
-                                                  image: Image.file(
-                                                          vehicleBackImagePath!)
-                                                      .image,
-                                                  fit: BoxFit.contain,
-                                                )
+                                          child: vehicleBackImagePath != null
+                                              ? Stack(
+                                            children: [
+
+                                              Image(
+                                                image: Image.file(
+                                                    vehicleBackImagePath!)
+                                                    .image,
+                                                fit: BoxFit.fitWidth,
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Container(
+                                                    decoration:
+                                                    BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(40),
+                                                        color: Colors.white
+                                                    ),child: Icon(Icons.find_replace,color: Color(0xfffd6206),)),
+                                              ),
+                                            ],
+                                          )
                                               : Container(
                                                   padding: EdgeInsets.all(10),
                                                   decoration: BoxDecoration(
@@ -280,9 +346,45 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                                   ),
                                                 ),
                                         ),
-                                        onTap: () async {
-                                          vehicleBackImagePath =
-                                              await pickImageFromGallery();
+                                        onTap: ()  {
+
+                                          showModalBottomSheet(
+                                              context: context,
+                                              builder: (BuildContext bc) {
+                                                return SafeArea(
+                                                  child: Container(
+                                                    child: new Wrap(
+                                                      children: <Widget>[
+                                                        new ListTile(
+                                                            leading: new Icon(Icons.photo_library),
+                                                            title: new Text('Photo Library'),
+                                                            onTap: () async{
+                                                              Navigator.of(context).pop();
+                                                              changingValue =
+                                                              await pickImageFromGallery();
+                                                              setState(() {
+                                                                vehicleBackImagePath = changingValue;
+                                                              });
+                                                            }),
+                                                        new ListTile(
+                                                          leading: new Icon(Icons.photo_camera),
+                                                          title: new Text('Camera'),
+                                                          onTap: () async{
+                                                            Navigator.of(context).pop();
+                                                            changingValue =
+                                                            await clickImage();
+                                                            setState(() {
+                                                              vehicleBackImagePath = changingValue;
+                                                            });
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                          );
+
                                           setState(() {
                                             vehicleBackImageAdded = true;
                                           });
@@ -347,12 +449,27 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                 strokeWidth: 1,
                                 child: GestureDetector(
                                   child: SizedBox(
-                                    child: rcImageAdded
-                                        ? Image(
-                                            image:
-                                                Image.file(rcImagePath!).image,
-                                            fit: BoxFit.fitWidth,
-                                          )
+                                    child: rcImagePath != null
+                                        ? Stack(
+                                      children: [
+
+                                        Image(
+                                          image: Image.file(
+                                              rcImagePath!)
+                                              .image,
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: Container(
+                                              decoration:
+                                              BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(40),
+                                                  color: Colors.white
+                                              ),child: Icon(Icons.find_replace,color: Color(0xfffd6206),)),
+                                        ),
+                                      ],
+                                    )
                                         : Container(
                                             width: double.infinity,
                                             padding: EdgeInsets.all(10),
@@ -372,8 +489,43 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                             ),
                                           ),
                                   ),
-                                  onTap: () async {
-                                    rcImagePath = await pickImageFromGallery();
+                                  onTap: ()  {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        builder: (BuildContext bc) {
+                                          return SafeArea(
+                                            child: Container(
+                                              child: new Wrap(
+                                                children: <Widget>[
+                                                  new ListTile(
+                                                      leading: new Icon(Icons.photo_library),
+                                                      title: new Text('Photo Library'),
+                                                      onTap: () async{
+                                                        Navigator.of(context).pop();
+                                                        changingValue = await pickImageFromGallery();
+                                                        setState(() {
+                                                          rcImagePath = changingValue;
+                                                        });
+
+                                                      }),
+                                                  new ListTile(
+                                                    leading: new Icon(Icons.photo_camera),
+                                                    title: new Text('Camera'),
+                                                    onTap: () async{
+                                                      Navigator.of(context).pop();
+                                                      changingValue =
+                                                      await clickImage();
+                                                      setState(() {
+                                                        rcImagePath = changingValue;
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                    );
                                     setState(() {
                                       rcImageAdded = true;
                                     });
@@ -480,13 +632,27 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                 strokeWidth: 1,
                                 child: GestureDetector(
                                   child: SizedBox(
-                                    child: insuranceImageAdded
-                                        ? Image(
-                                            image:
-                                                Image.file(insuranceImagePath!)
-                                                    .image,
-                                            fit: BoxFit.fitWidth,
-                                          )
+                                    child: insuranceImagePath != null
+                                        ? Stack(
+                                      children: [
+
+                                        Image(
+                                          image: Image.file(
+                                              insuranceImagePath!)
+                                              .image,
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                        Align(
+                                          alignment: Alignment.topRight,
+                                          child: Container(
+                                              decoration:
+                                              BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(40),
+                                                  color: Colors.white
+                                              ),child: Icon(Icons.find_replace,color: Color(0xfffd6206),)),
+                                        ),
+                                      ],
+                                    )
                                         : Container(
                                             width: double.infinity,
                                             padding: EdgeInsets.all(10),
@@ -506,9 +672,45 @@ class _VehicleDetailsState extends State<VehicleDetails> {
                                             ),
                                           ),
                                   ),
-                                  onTap: () async {
-                                    insuranceImagePath =
-                                        await pickImageFromGallery();
+                                  onTap: ()  {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        builder: (BuildContext bc) {
+                                          return SafeArea(
+                                            child: Container(
+                                              child: new Wrap(
+                                                children: <Widget>[
+                                                  new ListTile(
+                                                      leading: new Icon(Icons.photo_library),
+                                                      title: new Text('Photo Library'),
+                                                      onTap: () async{
+                                                        Navigator.of(context).pop();
+                                                        changingValue =
+                                                        await pickImageFromGallery();
+                                                        setState(() {
+                                                          insuranceImagePath = changingValue;
+                                                        });
+                                                      }),
+                                                  new ListTile(
+                                                    leading: new Icon(Icons.photo_camera),
+                                                    title: new Text('Camera'),
+                                                    onTap: () async{
+                                                      Navigator.of(context).pop();
+                                                      changingValue =
+                                                      await clickImage();
+                                                      setState(() {
+                                                        insuranceImagePath = changingValue;
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                    );
+
+
                                     setState(() {
                                       insuranceImageAdded = true;
                                     });

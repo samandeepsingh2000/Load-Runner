@@ -6,13 +6,16 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:load_runner/model/paymentHistoryModel.dart';
 import 'package:load_runner/screens/home_pages/pPay.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:http/http.dart' as http;
 
 class Wallet2 extends StatefulWidget {
-  final String name,number,token;
-Wallet2(this.name,this.number, this.token);
+  final String name, number, token;
+
+  Wallet2(this.name, this.number, this.token);
+
   @override
   _Wallet2State createState() => _Wallet2State();
 }
@@ -23,7 +26,10 @@ class _Wallet2State extends State<Wallet2> {
   late int walletBalance = 0;
   late int walletRecharge;
   late int walletWithdraw;
+  List<PaymentHistoryModel> _list = [];
+
   TextEditingController _textEditingController = TextEditingController();
+
   @override
   void initState() {
     getPayment();
@@ -61,6 +67,9 @@ class _Wallet2State extends State<Wallet2> {
                       keyboardType: TextInputType.number,
                       controller: _textEditingController,
                       decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color(0xfffd6204)),
+                        ),
                         labelText: 'Rs. ',
                         labelStyle: TextStyle(
                             color: Colors.black,
@@ -85,21 +94,28 @@ class _Wallet2State extends State<Wallet2> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(30))),
                         child: InkWell(
-                          onTap: (){
+                          onTap: () {
                             setState(() {
-                              walletRecharge = int.parse(_textEditingController.text) ;
-                              walletWithdraw = int.parse(_textEditingController.text) ;
+                              walletRecharge =
+                                  int.parse(_textEditingController.text);
+                              walletWithdraw =
+                                  int.parse(_textEditingController.text);
                             });
-                            if(title == "Recharge"){
+                            if (title == "Recharge") {
                               setState(() {
                                 // walletBalance == 0? walletBalance = walletRecharge : walletBalance = walletBalance+walletRecharge;
                                 // _pPayment();
-                                Navigator.of(context).push(new MaterialPageRoute(builder: (_)=>  pPay(_textEditingController.text, widget.name, widget.number)),)
-                                    .then((val)=>val?getPayment():null);
+                                Navigator.of(context)
+                                    .push(
+                                      MaterialPageRoute(
+                                          builder: (_) => pPay(
+                                              _textEditingController.text,
+                                              widget.name,
+                                              widget.number)),
+                                    )
+                                    .then((val) => val ? getPayment() : null);
                               });
-                            }else{
-
-
+                            } else {
                               // Navigator.push(
                               //     context,
                               //     MaterialPageRoute(
@@ -110,7 +126,6 @@ class _Wallet2State extends State<Wallet2> {
                             // if(_textEditingController.text.isNotEmpty && title == "Recharge"){
                             //   _pPayment();
                             // }
-
                           },
                           child: Text(
                             title == "Withdraw" ? 'SUBMIT' : "NEXT",
@@ -137,7 +152,7 @@ class _Wallet2State extends State<Wallet2> {
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
-          onTap: (){
+          onTap: () {
             Navigator.of(context).pop();
           },
           child: const Icon(
@@ -151,148 +166,173 @@ class _Wallet2State extends State<Wallet2> {
           style: TextStyle(color: Color.fromRGBO(253, 98, 4, 1)),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                  border: Border(
-                      top: BorderSide(width: 2, color: Colors.grey),
-                      bottom: BorderSide(width: 2, color: Colors.grey))),
-              height: size.height * 0.4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const SizedBox(
-                    height: 6,
+      body: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+                border: Border(
+                    top: BorderSide(width: 2, color: Colors.grey),
+                    bottom: BorderSide(width: 2, color: Colors.grey))),
+            height: size.height * 0.4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const SizedBox(
+                  height: 6,
+                ),
+                const Center(
+                  child: Text(
+                    'YOUR WALLET BALANCE',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.deepOrange,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold),
                   ),
-                  const Center(
-                    child: Text(
-                      'YOUR WALLET BALANCE',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.deepOrange,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
+                  height: 6,
+                ),
+                Center(
+                  child: Text(
+                    'RS.' + walletBalance.toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 60,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Minimum Recharge amount Rs:  '),
+                    Text(' **Minimum Withdraw Above Rs:  '),
+                    const SizedBox(
+                      height: 20,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 6,
-                  ),
-                   Center(
-                    child: Text(
-                      'RS.' + walletBalance.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 60,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Minimum Recharge amount Rs:  ' ),
-                      Text(' **Minimum Withdraw Above Rs:  ' ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              showDialog1(context: context, title: "Recharge");
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.only(
-                                  left: 18, right: 18, top: 10, bottom: 10),
-                              decoration: const BoxDecoration(
-                                  color: Colors.deepOrange,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              child: const Text(
-                                'RECHARGE',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showDialog1(context: context, title: "Recharge");
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.only(
+                                left: 18, right: 18, top: 10, bottom: 10),
+                            decoration: const BoxDecoration(
+                                color: Colors.deepOrange,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
+                            child: const Text(
+                              'RECHARGE',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              showDialog1(context: context, title: "Withdraw");
-                            },
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                  left: 18, right: 18, top: 10, bottom: 10),
-                              decoration: BoxDecoration(
-                                  color: Colors.deepOrange,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30))),
-                              child: Text(
-                                'WITHDRAW',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            showDialog1(context: context, title: "Withdraw");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.only(
+                                left: 18, right: 18, top: 10, bottom: 10),
+                            decoration: BoxDecoration(
+                                color: Colors.deepOrange,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
+                            child: Text(
+                              'WITHDRAW',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 6,
-                      ),
-                    ],
-                  )
-                ],
-              ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 6,
+                    ),
+                  ],
+                )
+              ],
             ),
-            SizedBox(
-                width: size.width * 0.7,
-                height: size.height * 0.5,
-                child: Center(
-                    child: Text(
-                  'Transaction History SCROLL',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                )))
-          ],
-        ),
+          ),
+          SizedBox(
+            height: 6,
+          ),
+          Flexible(
+            child: ListView.builder(
+                itemCount: _list.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: Text(_list[index].amount.toString()),
+                      subtitle:Text(_list[index].status!),
+                      trailing: Text(
+                        _list[index].startDate.toString().substring(0,11),
+                        style: TextStyle(color: Colors.green, fontSize: 15),
+                      ),
+                      title: Text(_list[index].transactionType!));
+                }),
+          ),
+        ],
       ),
     );
   }
-  String xy(String text){
+
+  String xy(String text) {
     final String Itype;
-    if(text == "Withdraw"){
-       Itype = "Minimum Withdraw Balance";
-    }else{
+    if (text == "Withdraw") {
+      Itype = "Minimum Withdraw Balance";
+    } else {
       Itype = "Minimum Recharge Balance";
     }
 
     return Itype;
   }
-  Widget _pPayment(){
-    String Url = "https://bf94-2402-3a80-1b25-91d2-aea8-7552-69b6-9106.ngrok.io/api/payment/neworder/";
-    return WebView(
-      initialUrl:'https://flutter.dev' ,
-      javascriptMode: JavascriptMode.unrestricted,
 
+  Widget _pPayment() {
+    String Url =
+        "https://bf94-2402-3a80-1b25-91d2-aea8-7552-69b6-9106.ngrok.io/api/payment/neworder/";
+    return WebView(
+      initialUrl: 'https://flutter.dev',
+      javascriptMode: JavascriptMode.unrestricted,
     );
   }
-  Future getPayment() async{
 
+  Future getPayment() async {
     String url = "https://loadrunner12.herokuapp.com/api/payment/getBalance";
     try {
       var jsonResponse;
-      var response = await http.get(Uri.parse("https://loadrunner12.herokuapp.com/api/payment/getBalance"), headers: {
-        "Content-Type": "application/json",
-        'Accept': 'application/json',
-         'Cookie': "token2=${widget.token}"
-      });
+      var response = await http.get(
+          Uri.parse(
+              "https://loadrunner12.herokuapp.com/api/payment/getBalance"),
+          headers: {
+            "Content-Type": "application/json",
+            'Accept': 'application/json',
+            'Cookie': "token2=${widget.token}"
+          });
+      var jsonResponse1;
+      var response1 = await http.get(
+          Uri.parse("https://loadrunner12.herokuapp.com/api/payment/history"),
+          headers: {
+            "Content-Type": "application/json",
+            'Accept': 'application/json',
+            'Cookie': "token2=${widget.token}"
+          });
+      if (response1.statusCode == 200) {
+        jsonResponse1 = json.decode(response1.body);
+
+        _list = (jsonResponse1 as List)
+            .map((data) => PaymentHistoryModel.fromJson(data))
+            .toList();}
       if (response.statusCode == 200) {
         print("jsonResponse1");
         print(response.body);
@@ -306,7 +346,7 @@ class _Wallet2State extends State<Wallet2> {
         print(jsonResponse);
 
         setState(() {
-         walletBalance = jsonResponse['balance'];
+          walletBalance = jsonResponse['balance'];
         });
 
       } else {
@@ -315,6 +355,29 @@ class _Wallet2State extends State<Wallet2> {
     } on TimeoutException catch (_) {
       // print("Hello");
     }
-
   }
+
+  // Future getHistory() async {
+  //   try {
+  //     var jsonResponse1;
+  //     var response1 = await http.get(
+  //         Uri.parse("https://loadrunner12.herokuapp.com/api/payment/history"),
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           'Accept': 'application/json',
+  //           'Cookie': "token2=${widget.token}"
+  //         });
+  //     if (response1.statusCode == 200) {
+  //       jsonResponse1 = json.decode(response1.body);
+  //
+  //       _list = (jsonResponse1 as List)
+  //           .map((data) => PaymentHistoryModel.fromJson(data))
+  //           .toList();
+  //     } else {
+  //       return null;
+  //     }
+  //   } on TimeoutException catch (_) {
+  //     // print("Hello");
+  //   }
+  // }
 }

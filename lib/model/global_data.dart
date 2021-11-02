@@ -17,7 +17,7 @@ File? aadharCardPhotoFront_Global;
 File? aadharCardPhotoBack_Global;
 File? panCardPhoto_Global;
 File? drivingLicensePhoto_Global;
-
+File? VaccinationCertificate_Global;
 String? rcNumber_Global;
 String? insuranceNumber_Global;
 String? insuranceExpiryDate_Global;

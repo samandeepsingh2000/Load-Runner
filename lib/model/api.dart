@@ -22,10 +22,12 @@ Future regsiterDetails() async {
   var backAadhaar = aadharCardPhotoBack_Global;
   var drivingPhoto = drivingLicensePhoto_Global;
   var panPhoto = panCardPhoto_Global;
+  var vaccineCertificate = VaccinationCertificate_Global;
   var rcPhoto = rcPhoto_Global;
   var insurancePhoto = insurancePhoto_Global;
   var vehiclePhoto = vehiclePhotoFront_Global;
   var passbookPhoto = passBookPhoto_Global;
+
   const url = urlDriver + '/register';
   Uri uri = Uri.parse(url);
   http.Response response;
@@ -49,7 +51,9 @@ Future regsiterDetails() async {
 {
   map['Pan_Photo_Url'] = await getUrl(panPhoto);
 
-}
+}if(vaccineCertificate != null){
+    map["Vaccination_Certificate_Url"] = await getUrl(vaccineCertificate);
+  }
   if(rcPhoto != null){
     map['RC_Photo_Url'] = await getUrl(rcPhoto);
 

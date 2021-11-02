@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:load_runner/model/global_data.dart';
 import 'package:load_runner/model/hexcolor.dart';
+import 'package:load_runner/screens/home_pages/terms_privacy.dart';
 import 'package:load_runner/screens/registration_pages/driver_registration.dart';
 import 'package:relative_scale/relative_scale.dart';
 
@@ -22,11 +23,14 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   FirebaseAuth? _auth;
   var errorMsg;
+  bool isNotPresent = false;
   bool? isLoading = false;
   String? verificationId;
   bool? _passwordVisible = false,
       _confirmPasswordVisible = false,
       _otpVisible = false;
+  String terms = "https://loadrunnr.in/terms-and-conditions.php";
+  String privacy = "https://loadrunnr.in/privacy-policy.php";
   TextEditingController phoneNumber = TextEditingController();
   TextEditingController otp = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -60,7 +64,15 @@ class _SignUpPageState extends State<SignUpPage> {
       print("FirebaseException");
       print(_scaffoldKey);
       print(e);
-      showAlert(context, e.toString());
+      if(e.toString().contains("invalid.")){
+        buildErrorSnackbar(context, "OTP IS INVALID");
+        // showAlert(context, "OTP IS INVALID");
+      }else{
+        buildErrorSnackbar(context,  "OTP Is TimedOut");
+
+        // showAlert(context, "OTP Is TimedOut");
+      }
+      // showAlert(context, e.toString());
       setState(() {
         isLoading = false;
       });
@@ -84,7 +96,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return RelativeBuilder(builder: (context, height, wdith, sy, sx) {
       return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -104,12 +116,12 @@ class _SignUpPageState extends State<SignUpPage> {
                         letterSpacing: 1.0,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 100),
                     Text(
                       'Enter Phone Number and Verify with OTP',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        fontSize: 17,
+                        fontSize: 12,
                         letterSpacing: 0.8,
                       ),
                     ),
@@ -117,6 +129,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
                       child: TextField(
                         decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xfffd6204)),
+                          ),
                           prefixIcon: Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Text(
@@ -232,6 +247,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                     child: TextField(
                                       obscureText: !_otpVisible!,
                                       decoration: InputDecoration(
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Color(0xfffd6204)),
+                                        ),
                                         suffixIcon: IconButton(
                                           icon: Icon(
                                             _otpVisible!
@@ -276,15 +294,20 @@ class _SignUpPageState extends State<SignUpPage> {
                                       child: SizedBox(
                                         child: ElevatedButton(
                                           onPressed: () async {
-                                            AuthCredential
-                                            phoneAuthCredential =
-                                                PhoneAuthProvider.credential(
-                                                    verificationId:
-                                                        verificationId.toString(),
-                                                    smsCode: otp.text);
+                                            if(otp.text.isEmpty){
+                                              showAlert(context, "Enter Otp");
+                                            }else{
+                                              AuthCredential
+                                              phoneAuthCredential =
+                                              PhoneAuthProvider.credential(
+                                                  verificationId:
+                                                  verificationId.toString(),
+                                                  smsCode: otp.text);
 
-                                            signInWithPhoneAuthCredential(
-                                                phoneAuthCredential);
+                                              signInWithPhoneAuthCredential(
+                                                  phoneAuthCredential);
+                                            }
+
                                           },
                                           child: Text(
                                             'Verify OTP',
@@ -335,6 +358,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                   },
                                   obscureText: !_passwordVisible!,
                                   decoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Color(0xfffd6204)),
+                                    ),
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         _passwordVisible!
@@ -387,6 +413,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                   } ,
                                   obscureText: !_confirmPasswordVisible!,
                                   decoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Color(0xfffd6204)),
+                                    ),
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         _confirmPasswordVisible!
@@ -441,8 +470,12 @@ class _SignUpPageState extends State<SignUpPage> {
                                           showAlert(context,"Password length should be more than 6");
 
 
+                                        }if(password.text != confirmPassword.text){
+                                          buildErrorSnackbar(context, "Password and Confirm Password don't match");
+
+                                          // showAlert(context, "Password and Confirm Password don't match");
                                         }
-                                        if(password.text.length >=6 && password.text.isNotEmpty){
+                                        if(password.text.length >=6 && password.text.isNotEmpty && password.text == confirmPassword.text){
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -450,8 +483,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                                       (BuildContext context) =>
                                                       DriverDetails()));
                                         }
-
-
 
                                       },
                                       child: Text(
@@ -500,6 +531,35 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ],
                     ),
+                    SizedBox(height: MediaQuery.of(context).size.height*0.35,),
+                    Column(children: [
+                      Text("By Signing Up You Agree To Accept The",style: TextStyle(
+                          fontWeight: FontWeight.bold
+                      ),),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          InkWell(onTap:(){
+                            Navigator.of(context)
+                                .push(
+                              MaterialPageRoute(
+                                  builder: (_) => TermsAndPrivacy(terms,"Terms and Conditions")),
+                            );
+                          },child: Text("Terms & Conditions",style: TextStyle(
+                              color: Color(0xfffd6206)
+                          ),)),
+                          Text("\ And\ "),
+                          InkWell(onTap:(){
+                            Navigator.of(context)
+                                .push(
+                              MaterialPageRoute(
+                                  builder: (_) => TermsAndPrivacy(privacy,"Privacy and Policy")),
+                            );
+                          },child: Text("Privacy Policy",style: TextStyle(
+                              color: Color(0xfffd6206)
+                          )))
+                        ],),
+                    ],),
                   ],
                 ),
               )
@@ -519,7 +579,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
   Future checkPhone(String Number) async{
 
-    print(password);
+    print(Number);
     String url = "https://loadrunner12.herokuapp.com/api/checkNumber";
     var jsonResponse;
     final msg = jsonEncode({"Phone_no":Number});
@@ -528,7 +588,7 @@ class _SignUpPageState extends State<SignUpPage> {
       'Accept': 'application/json',
     });
     if(Number.length != 10){
-      showAlert(context, "Enter Valid Number");
+      buildErrorSnackbar(context, "Enter Valid Number");
     }
     if(response.statusCode == 409 && Number.length == 10 ){
       jsonResponse = json.decode(response.body);
@@ -538,7 +598,7 @@ class _SignUpPageState extends State<SignUpPage> {
           otpSend = true;
           isLoading = false;
         });
-        showAlert(context, "Number Already Present");
+        buildErrorSnackbar(context, "Number Already Present");
       }
     }
     if(response.statusCode == 200 && Number.length == 10) {
@@ -548,6 +608,7 @@ class _SignUpPageState extends State<SignUpPage> {
           // }
           setState(() {
             confirmNew= true;
+            isNotPresent = true;
           });
           setState(() {
             otpSend = false;
@@ -563,11 +624,36 @@ class _SignUpPageState extends State<SignUpPage> {
         }
       }
     }
+    return isNotPresent;
+
     // else {
     //   errorMsg = response.body;
     //   print("The error message is: ${response.body}");
     // }
 
   }
+  buildErrorSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 50),
+      elevation: 0,
+      width: 200,
+      behavior: SnackBarBehavior.floating,
+      content: Container(
+        padding: EdgeInsets.fromLTRB(0, 3, 0, 0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey,
 
+        ),
+        height: 40,
+        child: Center(child: Text(message,textAlign: TextAlign.center,)),
+      ),
+      backgroundColor: (Colors.white.withOpacity(0)),
+      // action: SnackBarAction(
+      //   label: 'dismiss',
+      //   onPressed: () {
+      //   },
+      // ),
+    ));
+  }
 }
